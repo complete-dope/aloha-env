@@ -5,6 +5,7 @@ from mujoco.glfw import glfw
 import numpy as np
 import sys
 import time
+from dataset import dataset_creation
 import imageio
 
 XML = "/Users/mohitdulani/Desktop/personal/robotics/gym-aloha/sims/assets/bimanual_viperx_transfer_cube.xml"
@@ -84,12 +85,15 @@ def random_actions(idx: int):
     ctrl[:] = new_state
     return ctrl
 
+actions = dataset_creation()
+
 try:
     last = time.time()
     idx = 0
     while not glfw.window_should_close(window):
         # step physics (you may call mj_step1/mj_step2 for custom substepping)
-        rand_action_data = random_actions(idx)
+        # rand_action_data = random_actions(idx)
+        rand_action_data = actions[idx]
         # print('random action data', len(rand_action_data)) # 16 action in total that gets rendered !
 
         data.ctrl[:] = rand_action_data
@@ -159,3 +163,7 @@ try:
 finally:
 
     glfw.terminate()
+
+
+
+
