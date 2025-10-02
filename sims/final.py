@@ -137,10 +137,15 @@ try:
         if idx %100 ==0:
             # save the image from the cameras
             mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN, context) # its says from now on dont render this on-screen
-            mujoco.mjr_render(left_wrist_viewport, left_wrist_scene, context)
+            # create a viewport for offscreen rendering
+            offscreen_viewport = mujoco.MjrRect(0, 0, wrist_width, wrist_height)
+
+            # Update scene with left wrist camera before rendering
+            mujoco.mjv_updateScene(model, data, opt, pert, left_wrist_cam, mujoco.mjtCatBit.mjCAT_ALL, scene)
+            mujoco.mjr_render(offscreen_viewport, scene, context)
 
             rgb = np.zeros((wrist_height, wrist_width, 3), dtype=np.uint8)
-            mujoco.mjr_readPixels(rgb, None, left_wrist_viewport, context)
+            mujoco.mjr_readPixels(rgb, None, offscreen_viewport, context)
             rgb = np.flipud(rgb)   # fix upside-down
             # store this
 
@@ -149,15 +154,8 @@ try:
 
             # unset it also 
             mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_WINDOW, context) # its says from now on dont render this on-screen
-            break
-
-
+            # break
 
 finally:
-    # cleanup
-    # mujoco.mjr_freeContext(context) # deprecated
-
-    ## TODO : check if not a black image, if black image then code didnt worked out 
-     
 
     glfw.terminate()

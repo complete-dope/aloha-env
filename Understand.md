@@ -26,5 +26,5 @@ then render it to of-screen or on-screen using the mjv_render() takes in :
 `3 args : (where, what, who-will-do) -> (viewport, scene, context)`
 
 
-
+In a loop you have to render so to always get upto date image-set
 
