@@ -1,6 +1,5 @@
 # THIS IS BASED ON IMITATION LEARNING 
 
-# basic_gui.py  -- for mujoco python bindings (v2.1+ / 2.3+)
 import mujoco
 from mujoco.glfw import glfw
 import numpy as np
@@ -8,7 +7,7 @@ import sys
 import time
 import imageio
 
-XML = "/Users/mohitdulani/Desktop/personal/robotics/sims/assets/bimanual_viperx_transfer_cube.xml"
+XML = "/Users/mohitdulani/Desktop/personal/robotics/gym-aloha/sims/assets/bimanual_viperx_transfer_cube.xml"
 
 # Model : The environment where the robot interacts lives with and working
 model = mujoco.MjModel.from_xml_path(XML)
@@ -27,13 +26,14 @@ left_wrist_cam.type = mujoco.mjtCamera.mjCAMERA_FIXED
 left_wrist_cam.fixedcamid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "left_wrist") # get id of object and return -1
 if left_wrist_cam.fixedcamid == -1:
     print('The name was not found for the mentioned object type')
-left_wrist_scene = mujoco.MjvScene(model, maxgeom=2000)
 
 # right wrist camera
 right_wrist_cam = mujoco.MjvCamera()
 right_wrist_cam.type = mujoco.mjtCamera.mjCAMERA_FIXED
 right_wrist_cam.fixedcamid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, "right_wrist")
-right_wrist_scene = mujoco.MjvScene(model, maxgeom=2000) # This creates an object for MjvScene and is a key component for visualising mujoco model 
+if right_wrist_cam.fixedcamid == -1:
+    print('The name was not found for the mentioned object type')
+
 
 
 window = glfw.create_window(1280, 720, "MuJoCo GUI", None, None)
@@ -108,14 +108,17 @@ try:
         
         # left wrist
         left_wrist_viewport = mujoco.MjrRect(width - wrist_width, 0, wrist_width, wrist_height)
-        mujoco.mjv_updateScene(model, data, opt, pert, left_wrist_cam, mujoco.mjtCatBit.mjCAT_ALL, left_wrist_scene)
-        mujoco.mjr_render(left_wrist_viewport, left_wrist_scene, context)
+        mujoco.mjv_updateScene(model, data, opt, pert, left_wrist_cam, mujoco.mjtCatBit.mjCAT_ALL, scene)
+        # mujoco.mjr_render(left_wrist_viewport, left_wrist_scene, context)
+        mujoco.mjr_render(left_wrist_viewport, scene, context)
         mujoco.mjr_text(mujoco.mjtFont.mjFONT_NORMAL, "Left Wrist", context, width - wrist_width + 5, 5, 0, 0, 0)
 
         # right wrist
         right_wrist_viewport = mujoco.MjrRect(width - wrist_width, wrist_height, wrist_width, wrist_height)
-        mujoco.mjv_updateScene(model, data, opt, pert, right_wrist_cam, mujoco.mjtCatBit.mjCAT_ALL, right_wrist_scene)
-        mujoco.mjr_render(right_wrist_viewport, right_wrist_scene, context) #renders a scene
+        mujoco.mjv_updateScene(model, data, opt, pert, right_wrist_cam, mujoco.mjtCatBit.mjCAT_ALL, scene)
+        # mujoco.mjr_render(right_wrist_viewport, right_wrist_scene, context) #renders a scene
+        mujoco.mjr_render(right_wrist_viewport, scene, context) #renders a scene
+
         mujoco.mjr_text(mujoco.mjtFont.mjFONT_NORMAL, "Right Wrist", context, width - wrist_width + 5, wrist_height + 5, 0, 0, 0)
 
         # glfw housekeeping
